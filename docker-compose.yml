@@ -1,0 +1,7 @@
+version: "3.8"
+
+services:
+  paylink:
+    build: .
+    ports:
+      - "8050:8050"
