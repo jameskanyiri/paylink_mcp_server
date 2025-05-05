@@ -62,4 +62,4 @@ if __name__ == "__main__":
     if transport not in {"stdio", "sse"}:
         raise ValueError(f"Unknown Transport: {transport}")
     
-    mcp.run(transport=transport)
+    mcp.run(transport="stdio")

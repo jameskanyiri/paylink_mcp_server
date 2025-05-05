@@ -2,7 +2,10 @@ import json
 from typing import Dict, Any
 from mcp.server.fastmcp import Context
 from src.servers.mpesa.models.context import MPesaContext
-from src.servers.mpesa.core.stk_push import initiate_stk_push
+from src.servers.mpesa.core.mpesa_express.stk_push import initiate_stk_push
+from src.servers.mpesa.core.mpesa_express.query_stk_push_status import (
+    query_stk_push_status,
+)
 
 
 class MpesaTools:
@@ -23,6 +26,7 @@ class MpesaTools:
         Registers available tools
         """
 
+        # STK PUSH TOOL
         @self.mcp.tool()
         async def stk_push(
             ctx: Context,
@@ -35,7 +39,7 @@ class MpesaTools:
             """
             Initiates an M-Pesa STK Push (Sim Tool Kit) transaction, which allows a merchant to request a customer to authorize a payment through M-Pesa.
 
-            This tool triggers the M-Pesa Lipa na M-Pesa Online API (STK Push), which sends a payment request to the customer's M-Pesa registered phone number. 
+            This tool triggers the M-Pesa Lipa na M-Pesa Online API (STK Push), which sends a payment request to the customer's M-Pesa registered phone number.
             The customer receives a prompt on their phone to enter their M-Pesa PIN to authorize and complete the payment.
 
             Args:
@@ -52,7 +56,7 @@ class MpesaTools:
             try:
                 # Access the M-Pesa context (which includes necessary details like access token)
                 mpesa_ctx: MPesaContext = ctx.request_context.lifespan_context
-                
+
                 # Call the function that initiates the STK push and get the response
                 response = await initiate_stk_push(
                     mpesa_ctx.access_token,
@@ -60,10 +64,37 @@ class MpesaTools:
                     amount,
                     account_reference,
                     transaction_desc,
-                    transaction_type
+                    transaction_type,
                 )
                 # Return the response as a formatted JSON string
                 return json.dumps(response, indent=2)
             except Exception as e:
                 # Handle any exceptions that occur and return an error message
                 return {"error": f"Failed to initiate STK push: {str(e)}"}
+
+        # STK PUSH STATUS QUERY TOOL
+        @self.mcp.tool()
+        async def stk_push_status(
+            ctx: Context,
+            checkout_request_id: str,
+        ) -> Dict[str, Any]:
+            """
+            Queries the status of an M-Pesa STK Push transaction using the CheckoutRequestID.
+
+            This tool checks whether a previously initiated Lipa na M-Pesa Online transaction was successful, failed, or is still pending.
+
+            Args:
+                checkout_request_id (str): The unique ID returned by M-Pesa during STK push initiation.
+
+            Returns:
+                Dict[str, Any]: A JSON object with transaction status including ResultCode and ResultDesc.
+            """
+            try:
+                mpesa_ctx: MPesaContext = ctx.request_context.lifespan_context
+
+                response = await query_stk_push_status(
+                    mpesa_ctx.access_token, checkout_request_id
+                )
+                return json.dumps(response, indent=2)
+            except Exception as e:
+                return {"error": f"Failed to query STK push status: {str(e)}"}

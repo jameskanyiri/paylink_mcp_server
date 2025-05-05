@@ -3,5 +3,6 @@ version: "3.8"
 services:
   paylink:
     build: .
+    container_name: paylink_server
     ports:
       - "8050:8050"
