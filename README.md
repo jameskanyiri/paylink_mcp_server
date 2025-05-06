@@ -1,10 +1,10 @@
-# 🚀 PayLink MCP Server
+# PayLink MCP Server
 
 **PayLink** is an open-source framework designed to streamline payment integration for developers building AI agents and financial applications across Africa.
 
-Leveraging the **Model Context Protocol (MCP)**, PayLink exposes a unified interface that simplifies access to diverse payment providers—such as M-Pesa, Airtel Money, and Stripe—enabling seamless financial workflows without repetitive integration work.
+Leveraging the **Model Context Protocol (MCP)**, PayLink exposes a unified interface that simplifies access to diverse payment providers—such as M-Pesa, Airtel Money seamless financial workflows without repetitive integration work.
 
-## 🌍 Why PayLink?
+## Why PayLink?
 
 Africa’s financial ecosystem is fragmented. Developers often rebuild custom integrations for each payment provider, leading to redundancy and reduced scalability. **PayLink solves this** by:
 
@@ -15,7 +15,7 @@ Africa’s financial ecosystem is fragmented. Developers often rebuild custom in
 
 ---
 
-## ✅ Currently Supported Providers
+## Currently Supported Providers
 
 - **M-Pesa** (Safaricom) – Under active development  
   - STK Push API  
@@ -24,11 +24,11 @@ Africa’s financial ecosystem is fragmented. Developers often rebuild custom in
 
 ---
 
-## 🛠️ Available Tools
+## Available Tools
 
 Each payment provider is exposed as a **tool** under the MCP server.
 
-### 🔹 M-Pesa Tools
+###  M-Pesa Tools
 
 | Tool              | Description                              |
 |-------------------|------------------------------------------|
@@ -40,22 +40,22 @@ More tools and enhancements are coming soon!
 
 ---
 
-## 🔮 Planned Features
+## Planned Features
 
-- 📱 **Additional Mobile Money**: Airtel Money, T-Kash, MTN Mobile Money  
-- 🏦 **Banking Integrations**: PesaLink, Open Banking APIs  
-- 🌐 **Cross-Border Payments**: Integration with regional and international remittance platforms  
-- 🤖 **AI-Powered Payment Bots**: Enable AI agents to manage collections, invoicing, and reconciliation  
+- **Additional Mobile Money**: Airtel Money, T-Kash, MTN Mobile Money  
+- **Banking Integrations**: PesaLink, Open Banking APIs  
+- **Cross-Border Payments**: Integration with regional and international remittance platforms  
+- **AI-Powered Payment Bots**: Enable AI agents to manage collections, invoicing, and reconciliation  
 
 ---
 
-## 📦 Getting Started
+## Getting Started
 
 Coming soon — setup instructions, environment configs, and example usage will be documented here.
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 We're open to contributions! If you'd like to help support more payment providers or improve the MCP implementation:
 
@@ -65,13 +65,13 @@ We're open to contributions! If you'd like to help support more payment provider
 
 ---
 
-## 📜 License
+## License
 
 MIT License — see [`LICENSE`](./LICENSE) for details.
 
 ---
 
-## 💬 Contact
+## Contact
 
 Feel free to reach out or open issues for support, ideas, or collaboration!
 
