@@ -62,25 +62,6 @@ mcp = FastMCP(
 )
 
 MpesaTools(mcp=mcp)
-
-# STK PUSH TOOL
-@mcp.tool()
-async def addition(a: int, b:int) -> int:
-    """
-    add two numbers
-    Args:
-        a: (int) - First number
-        b: (int) - Second number
-    Returns:
-        sum: (int) - Sum of a and b
-    """
-    try:
-        return a+b
-    except Exception as e:
-        # Handle any exceptions that occur and return an error message
-        return {"error": f"Failed to add two numbers: {str(e)}"}
-
-
 # Entry point to start the MCP server
 if __name__ == "__main__":
 
