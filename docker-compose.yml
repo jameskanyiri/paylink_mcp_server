@@ -1,8 +1,17 @@
-version: "3.8"
 
 services:
   paylink:
     build: .
-    container_name: paylink_server
+    container_name: paylink_mcp_server
     ports:
       - "8050:8050"
+    env_file:
+      - .env 
+    environment:
+      - TRANSPORT=${TRANSPORT}
+      - MPESA_CONSUMER_KEY=${MPESA_CONSUMER_KEY}
+      - MPESA_CONSUMER_SECRET=${MPESA_CONSUMER_SECRET}
+      - PASSKEY=${PASSKEY}
+      - BUSINESS_SHORTCODE=${BUSINESS_SHORTCODE}
+      - CALLBACK_URL=${CALLBACK_URL}
+      - BASE_URL=${BASE_URL}

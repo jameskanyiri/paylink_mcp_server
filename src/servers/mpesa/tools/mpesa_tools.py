@@ -6,6 +6,7 @@ from src.servers.mpesa.core.mpesa_express.stk_push import initiate_stk_push
 from src.servers.mpesa.core.mpesa_express.query_stk_push_status import (
     query_stk_push_status,
 )
+from src.servers.mpesa.core.mpesa_qr.generate_dynamic_qr import generate_dynamic_qr
 
 
 class MpesaTools:
@@ -98,3 +99,63 @@ class MpesaTools:
                 return json.dumps(response, indent=2)
             except Exception as e:
                 return {"error": f"Failed to query STK push status: {str(e)}"}
+
+        # GENERATE QR CODE
+        @self.mcp.tool()
+        async def generate_qr_code(
+            ctx: Context,
+            merchant_name: str,
+            ref_no: str,
+            amount: int,
+            trx_code: str,
+            cpi: str,
+            size: str = "300",
+        ) -> Dict[str, Any]:
+            """
+            Generates a Dynamic M-PESA QR Code for LIPA NA M-PESA (LNM) merchant payments using Safaricom's QR API.
+
+            This MCP tool enables Safaricom M-PESA customers using the MySafaricom App or M-PESA App to scan
+            a QR Code and pay directly to a merchant's till or business number. It captures key metadata such as
+            amount, reference number, and credit party identifier (CPI) — and returns a base64-encoded QR image.
+
+            Args:
+                merchant_name (str): Name of the M-PESA merchant or company as shown to the customer.
+                    Example: "TEST SUPERMARKET"
+                ref_no (str): Reference or invoice number to identify the transaction.
+                    Example: "Invoice-123"
+                amount (int): Total amount for the transaction in Kenyan Shillings.
+                    Example: 2000
+                trx_code (str): Type of transaction. Supported values include:
+                    - "BG": Buy Goods (Pay Merchant)
+                    - "WA": Withdraw Cash at Agent Till
+                    - "PB": Paybill
+                    - "SM": Send Money to MSISDN
+                    - "SB": Send to Business (CPI in MSISDN format)
+                cpi (str): Credit Party Identifier — till number, paybill, or MSISDN of merchant.
+                    Example: "174379"
+                size (str, optional): Size in pixels of the QR image (square). Default is "300".
+
+            Returns:
+                Dict[str, Any]: A dictionary containing:
+                    - ResponseCode (str): Unique transaction code, e.g. "AG_20201212_xxxxxx"
+                    - RequestID (str): Safaricom request tracking ID
+                    - ResponseDescription (str): Status message, e.g. "QR Code Successfully Generated."
+                    - QRCode (str): Base64-encoded PNG image of the QR code (can be rendered or stored)
+
+            """
+            try:
+                mpesa_ctx: MPesaContext = ctx.request_context.lifespan_context
+
+                payload = {
+                    "MerchantName": merchant_name,
+                    "RefNo": ref_no,
+                    "Amount": amount,
+                    "TrxCode": trx_code,
+                    "CPI": cpi,
+                    "Size": size,
+                }
+
+                response = await generate_dynamic_qr(mpesa_ctx.access_token, payload)
+                return response
+            except Exception as e:
+                return {"error": f"Failed to generate QR code: {str(e)}"}
