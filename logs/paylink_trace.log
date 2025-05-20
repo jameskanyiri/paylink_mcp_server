@@ -1,0 +1,2 @@
+{"asctime": "2025-05-20 09:44:56,004", "levelname": "INFO", "name": "paylink_tracing", "message": "Function call started", "function": "initiate_stk_push", "parameters": {"access_token": "eoaJPDPmXoBxdkdfEUtlsFrSxX3S", "phone_number": "254797357665", "amount": 1, "account_reference": "james", "transaction_desc": "james", "transaction_type": "CustomerBuyGoodsOnline"}}
+{"asctime": "2025-05-20 09:44:56,743", "levelname": "INFO", "name": "paylink_tracing", "message": "Function returned successfully", "function": "initiate_stk_push", "duration": "0.74s"}

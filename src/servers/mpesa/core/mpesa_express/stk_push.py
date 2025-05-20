@@ -3,8 +3,9 @@ import time
 import httpx
 import base64
 from typing import Dict, Any
+from src.tracing.async_trace import async_trace
 
-
+@async_trace
 async def initiate_stk_push(
     access_token: str,
     phone_number: str,

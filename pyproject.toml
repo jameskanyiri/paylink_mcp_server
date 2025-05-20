@@ -11,4 +11,6 @@ dependencies = [
     "ipykernel>=6.29.5",
     "mcp[cli]>=1.6.0",
     "nest-asyncio>=1.6.0",
+    "pymongo[srv]>=4.13.0",
+    "python-json-logger>=3.3.0",
 ]

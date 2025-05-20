@@ -4,7 +4,6 @@ import base64
 import httpx
 from typing import Dict, Any
 
-
 async def query_stk_push_status(
     access_token: str,
     checkout_request_id: str
