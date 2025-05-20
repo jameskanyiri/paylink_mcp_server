@@ -15,7 +15,6 @@ client = MongoClient(os.getenv("MONGO_URL"), server_api=ServerApi("1"))
 
 trace_collection = client["paylink"]["traces"]
 
-
 def async_trace(func: Callable):
     @functools.wraps(func)
     async def wrapper(*args, **kwargs) -> Any:
@@ -27,15 +26,14 @@ def async_trace(func: Callable):
         bound_args.apply_defaults()
         arguments = bound_args.arguments
 
-        # Extract trace-relevant fields
         transaction_context = {
             "phone_number": arguments.get("phone_number"),
             "amount": arguments.get("amount"),
             "account_reference": arguments.get("account_reference"),
             "transaction_desc": arguments.get("transaction_desc"),
             "transaction_type": arguments.get("transaction_type"),
-            "currency": "KES",  # hardcoded for now
-            "provider": "M-Pesa",  # inferred from function or config
+            "currency": "KES",
+            "provider": "M-Pesa",
         }
 
         trace_log = {
@@ -44,39 +42,37 @@ def async_trace(func: Callable):
             "timestamp": datetime.utcnow(),
             "transaction": transaction_context,
             "metadata": {
-                "env": "production",  # optional: infer from os.getenv
-            },
+                "env": "production",
+            }
         }
 
-        # Insert the initial trace and store the _id
         insert_result = trace_collection.insert_one(trace_log)
         trace_id = insert_result.inserted_id
 
         try:
             result = await func(*args, **kwargs)
+
+            status = "error" if isinstance(result, dict) and "error" in result else "success"
+
             trace_collection.update_one(
                 {"_id": trace_id},
-                {
-                    "$set": {
-                        "status": "success",
-                        "duration": round(time.time() - start_time, 3),
-                        "timestamp": datetime.utcnow(),
-                        "result": result if isinstance(result, dict) else str(result),
-                    }
-                },
+                {"$set": {
+                    "status": status,
+                    "duration": round(time.time() - start_time, 3),
+                    "timestamp": datetime.utcnow(),
+                    "result": result if isinstance(result, dict) else str(result),
+                }}
             )
             return result
         except Exception as e:
             trace_collection.update_one(
                 {"_id": trace_id},
-                {
-                    "$set": {
-                        "status": "error",
-                        "duration": round(time.time() - start_time, 3),
-                        "error": str(e),
-                        "timestamp": datetime.utcnow(),
-                    }
-                },
+                {"$set": {
+                    "status": "error",
+                    "duration": round(time.time() - start_time, 3),
+                    "error": str(e),
+                    "timestamp": datetime.utcnow(),
+                }}
             )
             raise
 
