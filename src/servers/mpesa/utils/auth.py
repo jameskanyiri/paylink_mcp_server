@@ -8,6 +8,7 @@ from src.servers.mpesa.models.context import MPesaContext
 
 load_dotenv(override=True)
 
+
 async def get_access_token():
     consumer_key = os.getenv("MPESA_CONSUMER_KEY")
     consumer_secret = os.getenv("MPESA_CONSUMER_SECRET")
@@ -31,6 +32,7 @@ async def get_access_token():
             "access_token": data["access_token"],
             "expires_in": int(data["expires_in"]),
         }
+
 
 async def refresh_access_token(context: MPesaContext):
     while True:
