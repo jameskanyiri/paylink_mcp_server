@@ -30,6 +30,5 @@ async def main():
                 print(f"  - {tool.name}: {tool.description}")
 
 
-
 if __name__ == "__main__":
     asyncio.run(main())

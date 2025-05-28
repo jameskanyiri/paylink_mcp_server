@@ -9,14 +9,6 @@ from mcp.server.fastmcp import FastMCP
 from src.servers.mpesa.utils.auth import get_access_token, refresh_access_token
 from src.servers.mpesa.models.context import MPesaContext
 from src.servers.mpesa.tools.mpesa_tools import MpesaTools
-from mcp.server.fastmcp import Context
-from typing import Dict, Any
-import json
-from src.servers.mpesa.core.mpesa_express.stk_push import initiate_stk_push
-from src.servers.mpesa.core.mpesa_express.query_stk_push_status import (
-    query_stk_push_status,
-)
-from src.servers.mpesa.core.mpesa_qr.generate_dynamic_qr import generate_dynamic_qr
 
 
 # Load env
@@ -65,8 +57,7 @@ MpesaTools(mcp=mcp)
 
 # Entry point to start the MCP server
 if __name__ == "__main__":
-
-    transport = os.getenv("TRANSPORT").lower()
+    transport = os.getenv("TRANSPORT", "stdio").lower()
 
     if transport not in {"stdio", "sse"}:
         raise ValueError(f"Unknown Transport: {transport}")

@@ -1,4 +1,3 @@
-import json
 from typing import Dict, Any
 from mcp.server.fastmcp import Context
 from src.servers.mpesa.models.context import MPesaContext
@@ -38,24 +37,32 @@ class MpesaTools:
             transaction_type: str,
         ) -> Dict[str, Any]:
             """
-            Initiates an M-Pesa STK Push (Sim Tool Kit) transaction, which allows a merchant to request a customer to authorize a payment through M-Pesa.
+            Initiates an M-Pesa STK Push (Sim Tool Kit) transaction, allowing
+            a merchant to request a customer to authorize a payment via M-Pesa.
 
-            This tool triggers the M-Pesa Lipa na M-Pesa Online API (STK Push), which sends a payment request to the customer's M-Pesa registered phone number.
-            The customer receives a prompt on their phone to enter their M-Pesa PIN to authorize and complete the payment.
+            This tool triggers the M-Pesa Lipa na M-Pesa Online API (STK Push),
+            sending a payment request to the customer's M-Pesa registered
+            phone number. The customer then enters their M-Pesa PIN to
+            authorize and complete the payment.
 
             Args:
-                phone_number (str): The mobile number to which the STK Push prompt will be sent (should be an M-Pesa registered number).
-                amount (int): The amount to be paid, in integer value.
-                account_reference (str): A reference string for the account being charged, displayed to the customer in the STK prompt.
-                transaction_desc (str): A brief description of the transaction, displayed in the STK prompt.
-                transaction_type (str): The type of transaction being processed (e.g., "CustomerPayBillOnline" for pay bill transactions, or "CustomerBuyGoodsOnline" for goods purchases).
+                phone_number (str): Mobile number for STK Push prompt
+                    (M-Pesa registered).
+                amount (int): Amount to be paid (integer).
+                account_reference (str): Account reference displayed to customer
+                    in STK prompt.
+                transaction_desc (str): Brief transaction description shown in
+                    STK prompt.
+                transaction_type (str): Transaction type, e.g.,
+                    "CustomerPayBillOnline" or "CustomerBuyGoodsOnline".
 
             Returns:
-                Dict[str, Any]: A JSON object containing the result of the request. On success, includes the transaction's status and details. In case of failure, an error message will be returned.
-
+                Dict[str, Any]: JSON object with request result. On success,
+                    includes transaction status/details. On failure, returns
+                    an error message.
             """
             try:
-                # Access the M-Pesa context (which includes necessary details like access token)
+                # Access M-Pesa context (includes access token)
                 mpesa_ctx: MPesaContext = ctx.request_context.lifespan_context
 
                 # Call the function that initiates the STK push and get the response
@@ -67,11 +74,17 @@ class MpesaTools:
                     transaction_desc,
                     transaction_type,
                 )
-                # Return the response as a formatted JSON string
-                return json.dumps(response, indent=2)
+                # Return the response directly
+                return response
             except Exception as e:
                 # Handle any exceptions that occur and return an error message
-                return {"error": f"Failed to initiate STK push: {str(e)}"}
+                return {
+                    "error": {
+                        "code": "TOOL_EXECUTION_ERROR",
+                        "message": "Failed to execute STK push tool.",
+                        "details": str(e),
+                    }
+                }
 
         # STK PUSH STATUS QUERY TOOL
         @self.mcp.tool()
@@ -80,15 +93,18 @@ class MpesaTools:
             checkout_request_id: str,
         ) -> Dict[str, Any]:
             """
-            Queries the status of an M-Pesa STK Push transaction using the CheckoutRequestID.
+            Queries status of an M-Pesa STK Push transaction using CheckoutRequestID.
 
-            This tool checks whether a previously initiated Lipa na M-Pesa Online transaction was successful, failed, or is still pending.
+            Checks if a previously initiated Lipa na M-Pesa Online transaction
+            succeeded, failed, or is pending.
 
             Args:
-                checkout_request_id (str): The unique ID returned by M-Pesa during STK push initiation.
+                checkout_request_id (str): Unique ID from M-Pesa during STK push
+                    initiation.
 
             Returns:
-                Dict[str, Any]: A JSON object with transaction status including ResultCode and ResultDesc.
+                Dict[str, Any]: JSON object with transaction status (ResultCode
+                    and ResultDesc).
             """
             try:
                 mpesa_ctx: MPesaContext = ctx.request_context.lifespan_context
@@ -96,9 +112,16 @@ class MpesaTools:
                 response = await query_stk_push_status(
                     mpesa_ctx.access_token, checkout_request_id
                 )
-                return json.dumps(response, indent=2)
+                # Return the response directly
+                return response
             except Exception as e:
-                return {"error": f"Failed to query STK push status: {str(e)}"}
+                return {
+                    "error": {
+                        "code": "TOOL_EXECUTION_ERROR",
+                        "message": "Failed to execute STK push status query tool.",
+                        "details": str(e),
+                    }
+                }
 
         # GENERATE QR CODE
         @self.mcp.tool()
@@ -112,35 +135,38 @@ class MpesaTools:
             size: str = "300",
         ) -> Dict[str, Any]:
             """
-            Generates a Dynamic M-PESA QR Code for LIPA NA M-PESA (LNM) merchant payments using Safaricom's QR API.
+            Generates Dynamic M-PESA QR Code for LIPA NA M-PESA (LNM) payments
+            via Safaricom's QR API.
 
-            This MCP tool enables Safaricom M-PESA customers using the MySafaricom App or M-PESA App to scan
-            a QR Code and pay directly to a merchant's till or business number. It captures key metadata such as
-            amount, reference number, and credit party identifier (CPI) — and returns a base64-encoded QR image.
+            Enables M-PESA customers with MySafaricom App or M-PESA App to scan
+            a QR Code and pay a merchant's till/business number. Captures
+            metadata (amount, ref no, CPI) and returns base64 QR image.
 
             Args:
-                merchant_name (str): Name of the M-PESA merchant or company as shown to the customer.
+                merchant_name (str): M-PESA merchant/company name shown to customer.
                     Example: "TEST SUPERMARKET"
-                ref_no (str): Reference or invoice number to identify the transaction.
+                ref_no (str): Reference/invoice number for the transaction.
                     Example: "Invoice-123"
-                amount (int): Total amount for the transaction in Kenyan Shillings.
+                amount (int): Total transaction amount in KES.
                     Example: 2000
-                trx_code (str): Type of transaction. Supported values include:
+                trx_code (str): Transaction type. Supported:
                     - "BG": Buy Goods (Pay Merchant)
                     - "WA": Withdraw Cash at Agent Till
                     - "PB": Paybill
                     - "SM": Send Money to MSISDN
                     - "SB": Send to Business (CPI in MSISDN format)
-                cpi (str): Credit Party Identifier — till number, paybill, or MSISDN of merchant.
+                cpi (str): Credit Party Identifier (till, paybill, or MSISDN).
                     Example: "174379"
-                size (str, optional): Size in pixels of the QR image (square). Default is "300".
+                size (str, optional): QR image size in pixels (square). Default "300".
 
             Returns:
-                Dict[str, Any]: A dictionary containing:
-                    - ResponseCode (str): Unique transaction code, e.g. "AG_20201212_xxxxxx"
-                    - RequestID (str): Safaricom request tracking ID
-                    - ResponseDescription (str): Status message, e.g. "QR Code Successfully Generated."
-                    - QRCode (str): Base64-encoded PNG image of the QR code (can be rendered or stored)
+                Dict[str, Any]: Dictionary with:
+                    - ResponseCode (str): Unique transaction code
+                        (e.g., "AG_20201212_xxxxxx").
+                    - RequestID (str): Safaricom request tracking ID.
+                    - ResponseDescription (str): Status
+                        (e.g., "QR Code Successfully Generated.").
+                    - QRCode (str): Base64-encoded PNG QR image.
 
             """
             try:
@@ -158,4 +184,10 @@ class MpesaTools:
                 response = await generate_dynamic_qr(mpesa_ctx.access_token, payload)
                 return response
             except Exception as e:
-                return {"error": f"Failed to generate QR code: {str(e)}"}
+                return {
+                    "error": {
+                        "code": "TOOL_EXECUTION_ERROR",
+                        "message": "Failed to execute QR code generation tool.",
+                        "details": str(e),
+                    }
+                }
