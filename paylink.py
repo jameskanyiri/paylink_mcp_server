@@ -9,14 +9,6 @@ from mcp.server.fastmcp import FastMCP
 from src.servers.mpesa.utils.auth import get_access_token, refresh_access_token
 from src.servers.mpesa.models.context import MPesaContext
 from src.servers.mpesa.tools.mpesa_tools import MpesaTools
-from mcp.server.fastmcp import Context
-from typing import Dict, Any
-import json
-from src.servers.mpesa.core.mpesa_express.stk_push import initiate_stk_push
-from src.servers.mpesa.core.mpesa_express.query_stk_push_status import (
-    query_stk_push_status,
-)
-from src.servers.mpesa.core.mpesa_qr.generate_dynamic_qr import generate_dynamic_qr
 
 
 # Load env
@@ -59,6 +51,7 @@ mcp = FastMCP(
     host="0.0.0.0",  # Only used for SSE transport (localhost)
     port=8050,  # Only used for SSE transport (set this to any port)
     lifespan=app_lifespan,
+    stateless_http=True
 )
 
 MpesaTools(mcp=mcp)
@@ -71,4 +64,4 @@ if __name__ == "__main__":
     if transport not in {"stdio", "sse"}:
         raise ValueError(f"Unknown Transport: {transport}")
 
-    mcp.run(transport="stdio")
+    mcp.run(transport="streamable-http")
