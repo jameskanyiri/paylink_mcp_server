@@ -26,6 +26,8 @@ class MpesaTools:
         """
         Registers available tools
         """
+        
+       
 
         # STK PUSH TOOL
         @self.mcp.tool()
@@ -57,6 +59,8 @@ class MpesaTools:
             try:
                 # Access the M-Pesa context (which includes necessary details like access token)
                 mpesa_ctx: MPesaContext = ctx.request_context.lifespan_context
+                
+                print("Initiating STK push...")
 
                 # Call the function that initiates the STK push and get the response
                 response = await initiate_stk_push(

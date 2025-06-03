@@ -1,7 +1,7 @@
 import asyncio
 import nest_asyncio
 from mcp import ClientSession
-from mcp.client.sse import sse_client
+from mcp.client.streamable_http import streamablehttp_client
 
 nest_asyncio.apply()  # Needed to run interactive python
 
@@ -18,10 +18,9 @@ uv run server.py
 
 async def main():
     # Connect to the server using SSE
-    async with sse_client("http://localhost:8050/sse") as (read_stream, write_stream):
-        async with ClientSession(read_stream, write_stream) as session:
-            # Initialize the connection
-            await session.initialize()
+    async with streamablehttp_client("http://localhost:8050/mcp") as (read_stream, write_stream, _):
+            async with ClientSession(read_stream, write_stream) as session:
+                await session.initialize()
 
             # List available tools
             tools_result = await session.list_tools()
