@@ -63,7 +63,15 @@ mcp = FastMCP(
 
 @mcp.custom_route("/mpesa/callback", methods=["POST"])
 async def mpesa_callback_handler(request: Request) -> Response:
-    """Handle M-Pesa webhook callback."""
+    """
+    TODO: Super callback
+        pass the request and the provider
+    Handle M-Pesa webhook callback.
+    
+    
+    """
+    
+    
     try:
         # Read the request body (asynchronous)
         body = await request.body()
@@ -85,9 +93,11 @@ async def mpesa_callback_handler(request: Request) -> Response:
         # Return a 500 error response to M-Pesa
         return Response(status_code=500, content=f"Error processing webhook: {str(e)}")
 
+
 MpesaTools(mcp=mcp)
 
 # Entry point to start the MCP server
 if __name__ == "__main__":
 
-    mcp.run(transport="streamable-http")
+    mcp.run(transport="stdio")
+    # mcp.run(transport="streamable-http")
