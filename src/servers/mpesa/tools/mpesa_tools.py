@@ -7,6 +7,7 @@ from src.servers.mpesa.core.mpesa_express.query_stk_push_status import (
     query_stk_push_status,
 )
 from src.servers.mpesa.core.mpesa_qr.generate_dynamic_qr import generate_dynamic_qr
+from src.servers.mpesa.core.c2b.initiate_c2b_payment import initiate_c2b_payment
 
 
 class MpesaTools:
@@ -163,3 +164,30 @@ class MpesaTools:
                 return response
             except Exception as e:
                 return {"error": f"Failed to generate QR code: {str(e)}"}
+            
+            
+        #INITIATE CUSTOMER TO BUSINESS
+        @self.mcp.tool()
+        async def c2b_payment(
+            amount: int,
+            account_number: str,
+        ) -> Dict[str, Any]:
+            """
+            Generates M-Pesa C2B payment instructions for manual user payment via Paybill.
+
+            Args:
+                amount (int): The amount the user should pay.
+                account_number (str): The reference/account number that identifies the payment.
+
+            Returns:
+                Dict[str, Any]: Payment instructions for the user.
+            """
+            
+            try:
+                
+
+                response = await initiate_c2b_payment(amount, account_number)
+                return response
+            except Exception as e:
+                return {"error": f"Failed to generate QR code: {str(e)}"}
+            
