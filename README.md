@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/jameskanyiri-paylink-mcp-server-badge.png)](https://mseep.ai/app/jameskanyiri-paylink-mcp-server)
+
 # PayLink MCP Server
 
 **PayLink** is an open-source framework designed to streamline payment integration for developers building AI agents and financial applications across Africa.
